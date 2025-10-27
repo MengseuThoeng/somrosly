@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verify OTP - Somrosly{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full">
+        <!-- Logo/Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-[#db2777] to-[#be185d] bg-clip-text text-transparent mb-2">
+                Verify Your Email
+            </h1>
+            <p class="text-gray-600">Enter the 6-digit code sent to</p>
+            <p class="text-[#db2777] font-semibold">{{ email }}</p>
+        </div>
+
+        <!-- OTP Form -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8">
+            <form method="post" id="otpForm">
+                {% csrf_token %}
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-4 text-center text-lg">
+                        Enter Verification Code
+                    </label>
+                    
+                    <!-- OTP Input Fields -->
+                    <div class="flex justify-center gap-3 mb-6">
+                        <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:border-[#db2777] focus:ring-2 focus:ring-[#db2777]/20 outline-none transition" data-index="0" />
+                        <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:border-[#db2777] focus:ring-2 focus:ring-[#db2777]/20 outline-none transition" data-index="1" />
+                        <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:border-[#db2777] focus:ring-2 focus:ring-[#db2777]/20 outline-none transition" data-index="2" />
+                        <span class="flex items-center text-2xl font-bold text-gray-400">-</span>
+                        <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:border-[#db2777] focus:ring-2 focus:ring-[#db2777]/20 outline-none transition" data-index="3" />
+                        <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:border-[#db2777] focus:ring-2 focus:ring-[#db2777]/20 outline-none transition" data-index="4" />
+                        <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:border-[#db2777] focus:ring-2 focus:ring-[#db2777]/20 outline-none transition" data-index="5" />
+                    </div>
+                    
+                    <!-- Hidden input for actual OTP submission -->
+                    <input type="hidden" name="otp" id="otpValue" />
+                </div>
+
+                <button type="submit" class="w-full py-4 px-6 bg-gradient-to-r from-[#db2777] to-[#be185d] text-white rounded-full font-bold text-lg hover:shadow-lg hover:shadow-[#db2777]/30 transition transform hover:scale-105">
+                    Verify Code
+                </button>
+            </form>
+
+            <!-- Resend OTP -->
+            <div class="mt-6 text-center">
+                <p class="text-gray-600 mb-2">Didn't receive the code?</p>
+                <a href="{% url 'users:resend_otp' email=email %}" class="text-[#db2777] font-bold hover:underline">
+                    Resend Code
+                </a>
+            </div>
+
+            <!-- Timer -->
+            <div class="mt-4 text-center">
+                <p class="text-sm text-gray-500">
+                    Code expires in <span id="timer" class="font-bold text-[#db2777]">10:00</span>
+                </p>
+            </div>
+
+            <!-- Back to register -->
+            <div class="mt-6 text-center">
+                <a href="{% url 'users:register' %}" class="text-gray-600 hover:text-gray-900 text-sm">
+                    ← Back to registration
+                </a>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-2xl p-4">
+            <div class="flex items-start">
+                <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <p class="text-sm text-blue-800">
+                        <strong>Security Tip:</strong> Never share your verification code with anyone. Somrosly will never ask for your code via phone or email.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // OTP Input Handler
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const otpValue = document.getElementById('otpValue');
+    const otpForm = document.getElementById('otpForm');
+
+    // Focus first input on load
+    otpInputs[0].focus();
+
+    otpInputs.forEach((input, index) => {
+        // Only allow numbers
+        input.addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (!/^\d*$/.test(value)) {
+                e.target.value = '';
+                return;
+            }
+
+            // Move to next input
+            if (value && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+
+            // Update hidden input
+            updateOTPValue();
+        });
+
+        // Handle backspace
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+
+        // Handle paste
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').trim();
+            if (/^\d{6}$/.test(pastedData)) {
+                pastedData.split('').forEach((char, i) => {
+                    if (otpInputs[i]) {
+                        otpInputs[i].value = char;
+                    }
+                });
+                otpInputs[5].focus();
+                updateOTPValue();
+            }
+        });
+    });
+
+    function updateOTPValue() {
+        const otp = Array.from(otpInputs).map(input => input.value).join('');
+        otpValue.value = otp;
+        
+        // Auto submit when all 6 digits are entered
+        if (otp.length === 6) {
+            otpForm.submit();
+        }
+    }
+
+    // Timer countdown (10 minutes)
+    let timeLeft = 600; // 10 minutes in seconds
+    const timerElement = document.getElementById('timer');
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft > 0) {
+            timeLeft--;
+        } else {
+            timerElement.textContent = 'Expired';
+            timerElement.classList.add('text-red-500');
+            otpInputs.forEach(input => input.disabled = true);
+        }
+    }
+
+    // Update timer every second
+    setInterval(updateTimer, 1000);
+    updateTimer();
+</script>
+
+<style>
+    .otp-input::-webkit-outer-spin-button,
+    .otp-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    .otp-input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+{% endblock %}

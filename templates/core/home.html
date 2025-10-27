@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section - Only show if not authenticated -->
+{% if not user.is_authenticated %}
+<div class="bg-white py-8 mb-4">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h1 class="text-6xl font-extrabold text-gray-900 mb-4">
+            Get your next
+        </h1>
+        <h2 class="text-5xl font-bold bg-gradient-to-r from-[#db2777] to-[#be185d] bg-clip-text text-transparent mb-6">
+            creative idea
+        </h2>
+        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Discover recipes, home ideas, style inspiration and other ideas to try
+        </p>
+        <a href="{% url 'users:register' %}" class="inline-block bg-[#db2777] hover:bg-[#be185d] text-white px-8 py-4 rounded-full text-lg font-bold transition transform hover:scale-105">
+            Sign up to explore
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Pins Grid - Pinterest Style -->
+<div class="max-w-[1920px] mx-auto px-4">
+    <!-- All Pins Feed -->
+    <div class="masonry" id="masonry-grid">
+        {% for pin in pins %}
+            <div class="masonry-item relative group cursor-pointer">
+                <a href="{% url 'pins:detail' pin.pk %}">
+                    <img 
+                        src="{{ pin.image.url }}" 
+                        alt="{{ pin.title }}"
+                        class="w-full h-auto"
+                        loading="lazy"
+                    >
+                    <div class="pin-overlay">
+                        <div>
+                            <button class="save-button">Save</button>
+                        </div>
+                        <div class="text-white">
+                            <h3 class="font-bold text-base mb-1 line-clamp-2">{{ pin.title }}</h3>
+                            <div class="flex items-center space-x-2">
+                                {% if pin.user.profile_picture %}
+                                <img src="{{ pin.user.profile_picture.url }}" class="w-6 h-6 rounded-full" alt="{{ pin.user.username }}">
+                                {% else %}
+                                <div class="w-6 h-6 rounded-full bg-gradient-to-br from-[#db2777] to-[#be185d] flex items-center justify-center text-xs font-bold">
+                                    {{ pin.user.username.0|upper }}
+                                </div>
+                                {% endif %}
+                                <span class="text-sm font-medium">{{ pin.user.username }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <!-- Empty State -->
+            <div class="col-span-full text-center py-20 bg-white rounded-3xl">
+                <svg class="mx-auto h-32 w-32 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <h3 class="mt-6 text-2xl font-bold text-gray-900">No pins yet!</h3>
+                <p class="mt-2 text-gray-600 max-w-md mx-auto">Be the first to share your ideas and inspire others</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'pins:create' %}" class="mt-6 inline-block bg-gradient-to-r from-[#db2777] to-[#be185d] hover:from-[#be185d] hover:to-[#a21653] text-white px-8 py-4 rounded-full font-bold transition transform hover:scale-105 shadow-lg">
+                        Create Pin
+                    </a>
+                {% else %}
+                    <a href="{% url 'users:register' %}" class="mt-6 inline-block bg-gradient-to-r from-[#db2777] to-[#be185d] hover:from-[#be185d] hover:to-[#a21653] text-white px-8 py-4 rounded-full font-bold transition transform hover:scale-105 shadow-lg">
+                        Sign up to create
+                    </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Loading Indicator -->
+    <div id="loading" class="hidden text-center py-8">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#db2777] border-t-transparent"></div>
+        <p class="mt-4 text-gray-600 font-semibold">Loading more pins...</p>
+    </div>
+</div>
+
+<!-- Infinite Scroll Script -->
+<script>
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMore = true;
+    
+    window.addEventListener('scroll', function() {
+        if (isLoading || !hasMore) return;
+        
+        const scrollPosition = window.innerHeight + window.scrollY;
+        const pageHeight = document.documentElement.scrollHeight;
+        
+        // Load more when scrolled 80% down the page
+        if (scrollPosition >= pageHeight * 0.8) {
+            loadMorePins();
+        }
+    });
+    
+    function loadMorePins() {
+        isLoading = true;
+        document.getElementById('loading').classList.remove('hidden');
+        
+        currentPage++;
+        
+        fetch(`?page=${currentPage}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.html) {
+                const masonryGrid = document.getElementById('masonry-grid');
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.html;
+                
+                while (tempDiv.firstChild) {
+                    masonryGrid.appendChild(tempDiv.firstChild);
+                }
+            }
+            
+            hasMore = data.has_more;
+            isLoading = false;
+            document.getElementById('loading').classList.add('hidden');
+        })
+        .catch(error => {
+            console.error('Error loading more pins:', error);
+            isLoading = false;
+            document.getElementById('loading').classList.add('hidden');
+        });
+    }
+</script>
+
+{% endblock %}

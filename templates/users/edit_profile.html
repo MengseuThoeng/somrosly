@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - Somrosly{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8">Edit Profile</h2>
+        
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <!-- Profile Picture -->
+            <div>
+                <label class="block text-base font-bold text-gray-900 mb-4">Profile Picture</label>
+                <div class="flex items-center gap-6">
+                    <div id="profile-preview">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="w-32 h-32 rounded-full object-cover shadow-lg">
+                        {% else %}
+                            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-[#db2777] to-[#be185d] flex items-center justify-center shadow-lg">
+                                <span class="text-white text-5xl font-bold">{{ user.username.0|upper }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <label for="profile_picture_input" class="cursor-pointer inline-block px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-full font-bold transition">
+                            Choose Photo
+                        </label>
+                        {{ form.profile_picture }}
+                        <p class="mt-2 text-sm text-gray-500">JPG, PNG or GIF (max. 5MB)</p>
+                        {% if form.profile_picture.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.profile_picture.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Name Fields -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-bold text-gray-900 mb-2">
+                        First Name
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.first_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-bold text-gray-900 mb-2">
+                        Last Name
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.last_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Email -->
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block text-sm font-bold text-gray-900 mb-2">
+                    Email
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Bio -->
+            <div>
+                <label for="{{ form.bio.id_for_label }}" class="block text-sm font-bold text-gray-900 mb-2">
+                    Bio
+                </label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.bio.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Website -->
+            <div>
+                <label for="{{ form.website.id_for_label }}" class="block text-sm font-bold text-gray-900 mb-2">
+                    Website
+                </label>
+                {{ form.website }}
+                {% if form.website.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.website.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Location -->
+            <div>
+                <label for="{{ form.location.id_for_label }}" class="block text-sm font-bold text-gray-900 mb-2">
+                    Location
+                </label>
+                {{ form.location }}
+                {% if form.location.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.location.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Social Media -->
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Social Media</h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.instagram.id_for_label }}" class="block text-sm font-bold text-gray-900 mb-2">
+                            Instagram
+                        </label>
+                        {{ form.instagram }}
+                        {% if form.instagram.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.instagram.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.twitter.id_for_label }}" class="block text-sm font-bold text-gray-900 mb-2">
+                            Twitter
+                        </label>
+                        {{ form.twitter }}
+                        {% if form.twitter.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.twitter.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-3 pt-6 border-t">
+                <a href="{% url 'users:profile' user.username %}" class="px-6 py-3 rounded-full text-gray-700 font-bold hover:bg-gray-100 transition">
+                    Cancel
+                </a>
+                <button 
+                    type="submit" 
+                    class="px-8 py-3 bg-[#db2777] text-white rounded-full hover:bg-[#be185d] transition font-bold"
+                >
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Profile picture preview
+    const profileInput = document.getElementById('profile_picture_input');
+    const profilePreview = document.getElementById('profile-preview');
+    
+    profileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                profilePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="w-32 h-32 rounded-full object-cover shadow-lg">`;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

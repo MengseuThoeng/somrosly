@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore - Discover Amazing Ideas - Somrosly{% endblock %}
+
+{% block content %}
+<div class="max-w-[1920px] mx-auto px-4 py-6">
+    <!-- Page Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Explore & Discover
+        </h1>
+        <p class="text-gray-600">Find trending ideas and inspiration from the community</p>
+    </div>
+
+    <!-- Popular Pins Section -->
+    {% if popular_pins %}
+    <div class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <svg class="w-7 h-7 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Trending Pins
+            </h2>
+            <span class="text-sm text-gray-500">Most loved by the community</span>
+        </div>
+        <div class="masonry">
+            {% for pin in popular_pins %}
+                <div class="masonry-item relative group cursor-pointer">
+                    <a href="{% url 'pins:detail' pin.pk %}">
+                        <img 
+                            src="{{ pin.image.url }}" 
+                            alt="{{ pin.title }}"
+                            class="w-full h-auto"
+                            loading="lazy"
+                        >
+                        <div class="pin-overlay">
+                            <div class="flex justify-between items-start">
+                                <button class="save-button">Save</button>
+                                <div class="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                    <svg class="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                    <span class="text-sm font-bold text-gray-900">{{ pin.total_likes }}</span>
+                                </div>
+                            </div>
+                            <div class="text-white">
+                                <h3 class="font-bold text-base mb-1 line-clamp-2">{{ pin.title }}</h3>
+                                <div class="flex items-center space-x-2">
+                                    {% if pin.user.profile_picture %}
+                                    <img src="{{ pin.user.profile_picture.url }}" class="w-6 h-6 rounded-full" alt="{{ pin.user.username }}">
+                                    {% else %}
+                                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-xs font-bold backdrop-blur-sm">
+                                        {{ pin.user.username.0|upper }}
+                                    </div>
+                                    {% endif %}
+                                    <span class="text-sm font-medium">{{ pin.user.username }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Pins Section -->
+    {% if recent_pins %}
+    <div class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Fresh Ideas
+            </h2>
+            <span class="text-sm text-gray-500">Just added to the community</span>
+        </div>
+        <div class="masonry">
+            {% for pin in recent_pins %}
+                <div class="masonry-item relative group cursor-pointer">
+                    <a href="{% url 'pins:detail' pin.pk %}">
+                        <img 
+                            src="{{ pin.image.url }}" 
+                            alt="{{ pin.title }}"
+                            class="w-full h-auto"
+                            loading="lazy"
+                        >
+                        <div class="pin-overlay">
+                            <div>
+                                <button class="save-button">Save</button>
+                            </div>
+                            <div class="text-white">
+                                <h3 class="font-bold text-base mb-1 line-clamp-2">{{ pin.title }}</h3>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        {% if pin.user.profile_picture %}
+                                        <img src="{{ pin.user.profile_picture.url }}" class="w-6 h-6 rounded-full" alt="{{ pin.user.username }}">
+                                        {% else %}
+                                        <div class="w-6 h-6 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-xs font-bold">
+                                            {{ pin.user.username.0|upper }}
+                                        </div>
+                                        {% endif %}
+                                        <span class="text-sm font-medium">{{ pin.user.username }}</span>
+                                    </div>
+                                    <span class="text-xs bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">New</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Random Discovery Section -->
+    {% if random_pins %}
+    <div class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                </svg>
+                Random Discoveries
+            </h2>
+            <button onclick="location.reload()" class="text-sm text-pink-600 hover:text-pink-700 font-semibold flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Shuffle
+            </button>
+        </div>
+        <div class="masonry">
+            {% for pin in random_pins %}
+                <div class="masonry-item relative group cursor-pointer">
+                    <a href="{% url 'pins:detail' pin.pk %}">
+                        <img 
+                            src="{{ pin.image.url }}" 
+                            alt="{{ pin.title }}"
+                            class="w-full h-auto"
+                            loading="lazy"
+                        >
+                        <div class="pin-overlay">
+                            <div>
+                                <button class="save-button">Save</button>
+                            </div>
+                            <div class="text-white">
+                                <h3 class="font-bold text-base mb-1 line-clamp-2">{{ pin.title }}</h3>
+                                <div class="flex items-center space-x-2">
+                                    {% if pin.user.profile_picture %}
+                                    <img src="{{ pin.user.profile_picture.url }}" class="w-6 h-6 rounded-full" alt="{{ pin.user.username }}">
+                                    {% else %}
+                                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-xs font-bold">
+                                        {{ pin.user.username.0|upper }}
+                                    </div>
+                                    {% endif %}
+                                    <span class="text-sm font-medium">{{ pin.user.username }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Empty State -->
+    {% if not popular_pins and not recent_pins and not random_pins %}
+        <div class="text-center py-20 bg-white rounded-3xl">
+            <svg class="mx-auto h-32 w-32 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <h3 class="mt-6 text-2xl font-bold text-gray-900">Nothing to explore yet</h3>
+            <p class="mt-2 text-gray-600 max-w-md mx-auto">Be the first to create and share creative ideas!</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'pins:create' %}" class="mt-6 inline-block bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-8 py-4 rounded-full font-bold transition transform hover:scale-105 shadow-lg">
+                    Create Pin
+                </a>
+            {% else %}
+                <a href="{% url 'users:register' %}" class="mt-6 inline-block bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-8 py-4 rounded-full font-bold transition transform hover:scale-105 shadow-lg">
+                    Sign up to create
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <!-- Loading Indicator -->
+    <div id="loading" class="hidden text-center py-8">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#db2777] border-t-transparent"></div>
+        <p class="mt-4 text-gray-600 font-semibold">Loading more pins...</p>
+    </div>
+</div>
+
+<script>
+let page = 1;
+let loading = false;
+let hasMore = true;
+let currentSection = 'popular';
+
+// Infinite scroll
+window.addEventListener('scroll', function() {
+    if (loading || !hasMore) return;
+    
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    
+    // Load more when 80% scrolled
+    if (scrollPosition >= pageHeight * 0.8) {
+        loadMorePins();
+    }
+});
+
+async function loadMorePins() {
+    if (loading || !hasMore) return;
+    
+    loading = true;
+    page++;
+    
+    // Show loading indicator
+    document.getElementById('loading').classList.remove('hidden');
+    
+    try {
+        const response = await fetch(`?page=${page}&section=${currentSection}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.html) {
+            // Find the last masonry container
+            const containers = document.querySelectorAll('.masonry');
+            const container = containers[containers.length - 1];
+            
+            if (container) {
+                // Create a temporary div to parse the HTML
+                const temp = document.createElement('div');
+                temp.innerHTML = data.html;
+                
+                // Append new items to the masonry
+                const newItems = temp.querySelectorAll('.masonry-item');
+                newItems.forEach(item => {
+                    container.appendChild(item);
+                });
+            }
+        }
+        
+        hasMore = data.has_more;
+        
+    } catch (error) {
+        console.error('Error loading more pins:', error);
+    } finally {
+        loading = false;
+        document.getElementById('loading').classList.add('hidden');
+    }
+}
+
+// Optional: Add section switcher
+function switchSection(section) {
+    currentSection = section;
+    page = 1;
+    hasMore = true;
+}
+</script>
+{% endblock %}

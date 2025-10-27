@@ -1,0 +1,26 @@
+
+
+# 🌸 Somrosly
+
+Somrosly is a modern full-stack web application built with Django and Stripe integration.
+Inspired by Pinterest, Somrosly provides a space for users to discover, save, and share visual inspirations within a clean and elegant interface.
+
+Our mission is to build a creative community where users can curate ideas, express their imagination, and support creators through secure Stripe payments.
+
+### 🧩 Tech Stack
+
+* Framework: Django (Full Stack)
+* Frontend: HTML, Tailwind CSS, JavaScript
+* Database: MySQL
+* Payments: Stripe API
+* Object Storage: MinIO
+---
+
+### 💡 Planned Features
+
+* User registration and authentication
+* Create, organize, and manage *boards* and *pins*
+* Integrated Stripe payments for premium features and creator support
+* Responsive, minimalist UI design
+* Explore and search creative inspirations
+* Image uploads and storage powered by MinIO
