@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   web:
@@ -34,6 +34,4 @@ volumes:
   static_volume:
   media_volume:
 
-networks:
-  default:
-    driver: bridge
+

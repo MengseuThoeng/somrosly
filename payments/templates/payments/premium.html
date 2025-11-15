@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Premium Membership - Somrosly{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if is_premium %}
+            <!-- Already Premium User -->
+            <div class="text-center max-w-3xl mx-auto">
+                <div class="mb-8 animate-bounce">
+                    <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-2xl">
+                        <i class="fas fa-crown text-6xl text-white"></i>
+                    </div>
+                </div>
+                
+                <h1 class="text-5xl font-bold bg-gradient-to-r from-yellow-600 to-yellow-500 bg-clip-text text-transparent mb-4">
+                    You're a Premium Member!
+                </h1>
+                <p class="text-xl text-gray-600 mb-12">Enjoy exclusive access to premium content and features</p>
+                
+                <div class="bg-white rounded-3xl shadow-xl p-8 mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Your Premium Benefits</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-800">Premium Pins Access</p>
+                                <p class="text-sm text-gray-500">View all exclusive content</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-800">Ad-Free Experience</p>
+                                <p class="text-sm text-gray-500">No interruptions</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-800">Priority Support</p>
+                                <p class="text-sm text-gray-500">Get help faster</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-800">Unlimited Saves</p>
+                                <p class="text-sm text-gray-500">Save as much as you want</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="{% url 'core:home' %}" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mb-6">
+                    <i class="fas fa-sparkles mr-2"></i>
+                    Browse Premium Pins
+                </a>
+                
+                <!-- Cancel Subscription Section -->
+                <div class="mt-8 p-6 bg-gray-50 rounded-2xl">
+                    <h4 class="font-semibold text-gray-800 mb-2">Manage Subscription</h4>
+                    <p class="text-sm text-gray-600 mb-4">Need to make changes to your subscription?</p>
+                    <button onclick="if(confirm('Are you sure you want to cancel your premium subscription? You will lose access to all premium features.')) { document.getElementById('cancel-form').submit(); }" class="text-red-600 hover:text-red-700 font-medium text-sm">
+                        Cancel Subscription
+                    </button>
+                    <form id="cancel-form" method="POST" action="{% url 'payments:cancel_subscription' %}" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <!-- Non-Premium User - Upgrade Option -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-lg mb-6">
+                    <i class="fas fa-crown text-3xl text-white"></i>
+                </div>
+                <h1 class="text-5xl font-bold text-gray-900 mb-4">Upgrade to Premium</h1>
+                <p class="text-xl text-gray-600">Unlock exclusive content and premium features</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <!-- Pricing Card -->
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-yellow-400 relative">
+                    <!-- Premium Badge -->
+                    <div class="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-6 py-2 rounded-bl-3xl font-bold">
+                        BEST VALUE
+                    </div>
+                    
+                    <div class="p-8 md:p-12">
+                        <!-- Price Section -->
+                        <div class="text-center mb-10">
+                            <div class="flex items-center justify-center mb-4">
+                                <span class="text-6xl font-bold text-gray-900">$2</span>
+                                <span class="text-2xl text-gray-500 ml-2">/month</span>
+                            </div>
+                            <p class="text-gray-600">Cancel anytime • No commitments</p>
+                        </div>
+                        
+                        <!-- Features Grid -->
+                        <div class="grid md:grid-cols-2 gap-6 mb-10">
+                            <div class="flex items-start space-x-4 p-4 rounded-2xl bg-gradient-to-br from-pink-50 to-purple-50">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                                    <i class="fas fa-gem text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 mb-1">Premium Pins Access</h4>
+                                    <p class="text-sm text-gray-600">View exclusive premium-only content created by top creators</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-4 p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                                    <i class="fas fa-infinity text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 mb-1">Unlimited Saves</h4>
+                                    <p class="text-sm text-gray-600">Save as many pins as you want without any restrictions</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-4 p-4 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                                    <i class="fas fa-ad text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 mb-1">Ad-Free Experience</h4>
+                                    <p class="text-sm text-gray-600">Browse without any interruptions or advertisements</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-4 p-4 rounded-2xl bg-gradient-to-br from-yellow-50 to-orange-50">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
+                                    <i class="fas fa-headset text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 mb-1">Priority Support</h4>
+                                    <p class="text-sm text-gray-600">Get help faster with our premium support team</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Options -->
+                        <div class="mb-6">
+                            <p class="text-center text-sm text-gray-600 mb-4 font-semibold">Choose your payment method:</p>
+                        </div>
+                        
+                        <!-- Stripe Payment Button -->
+                        <button id="checkout-button" class="w-full py-5 bg-gradient-to-r from-[#635BFF] to-[#5469d4] hover:from-[#5469d4] hover:to-[#4F5BD5] text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-3 mb-4">
+                            <i class="fab fa-cc-stripe text-2xl"></i>
+                            <span>Pay with Stripe</span>
+                        </button>
+                        
+                        <!-- PayPal Payment Button -->
+                        <button id="paypal-button" class="w-full py-5 bg-gradient-to-r from-[#0070ba] to-[#1546a0] hover:from-[#1546a0] hover:to-[#003087] text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-3">
+                            <i class="fab fa-paypal text-2xl"></i>
+                            <span>Pay with PayPal</span>
+                        </button>
+                        
+                        <!-- Trust Badges -->
+                        <div class="mt-8 flex items-center justify-center space-x-6 text-gray-500 flex-wrap gap-2">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-lock"></i>
+                                <span class="text-sm">Secure Payment</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fab fa-stripe text-2xl"></i>
+                                <span class="text-sm">Stripe</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fab fa-paypal text-2xl"></i>
+                                <span class="text-sm">PayPal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if not is_premium %}
+<!-- Stripe Checkout -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripe = Stripe('{{ stripe_public_key }}');
+    const checkoutButton = document.getElementById('checkout-button');
+    const paypalButton = document.getElementById('paypal-button');
+    
+    // Stripe Payment Handler
+    checkoutButton.addEventListener('click', async () => {
+        checkoutButton.disabled = true;
+        checkoutButton.innerHTML = '<i class="fas fa-spinner fa-spin text-2xl"></i><span class="ml-3">Processing...</span>';
+        
+        try {
+            const response = await fetch('{% url "payments:create_checkout_session" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert(data.error);
+                checkoutButton.disabled = false;
+                checkoutButton.innerHTML = '<i class="fab fa-cc-stripe text-2xl"></i><span class="ml-3">Pay with Stripe</span>';
+                return;
+            }
+            
+            // Redirect to Stripe Checkout
+            const result = await stripe.redirectToCheckout({
+                sessionId: data.sessionId
+            });
+            
+            if (result.error) {
+                alert(result.error.message);
+                checkoutButton.disabled = false;
+                checkoutButton.innerHTML = '<i class="fab fa-cc-stripe text-2xl"></i><span class="ml-3">Pay with Stripe</span>';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            checkoutButton.disabled = false;
+            checkoutButton.innerHTML = '<i class="fab fa-cc-stripe text-2xl"></i><span class="ml-3">Pay with Stripe</span>';
+        }
+    });
+    
+    // PayPal Payment Handler
+    paypalButton.addEventListener('click', async () => {
+        paypalButton.disabled = true;
+        paypalButton.innerHTML = '<i class="fas fa-spinner fa-spin text-2xl"></i><span class="ml-3">Processing...</span>';
+        
+        try {
+            const response = await fetch('{% url "payments:create_paypal_payment" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert(data.error);
+                paypalButton.disabled = false;
+                paypalButton.innerHTML = '<i class="fab fa-paypal text-2xl"></i><span class="ml-3">Pay with PayPal</span>';
+                return;
+            }
+            
+            // Redirect to PayPal
+            if (data.approval_url) {
+                window.location.href = data.approval_url;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            paypalButton.disabled = false;
+            paypalButton.innerHTML = '<i class="fab fa-paypal text-2xl"></i><span class="ml-3">Pay with PayPal</span>';
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}
+

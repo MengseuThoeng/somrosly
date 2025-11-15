@@ -30,7 +30,15 @@
             <div class="flex-1 text-center md:text-left">
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-4 mb-4">
                     <div>
-                        <h1 class="text-4xl font-bold text-gray-900">{{ profile_user.username }}</h1>
+                        <div class="flex items-center gap-3">
+                            <h1 class="text-4xl font-bold text-gray-900">{{ profile_user.username }}</h1>
+                            {% if profile_user.is_premium %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 text-white shadow-lg">
+                                    <i class="fas fa-crown mr-1.5"></i>
+                                    Premium
+                                </span>
+                            {% endif %}
+                        </div>
                         {% if profile_user.first_name or profile_user.last_name %}
                             <p class="text-xl text-gray-600 mt-1">{{ profile_user.get_full_name }}</p>
                         {% endif %}

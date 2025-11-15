@@ -71,3 +71,5 @@ urllib3==2.5.0
 virtualenv==20.30.0
 zope.interface==8.0.1
 django-debug-toolbar
+stripe
+paypalrestsdk

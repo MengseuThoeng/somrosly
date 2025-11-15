@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Successful - Somrosly{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <!-- Success Icon -->
+            <div class="mb-8">
+                <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 shadow-2xl animate-pulse">
+                    <i class="fas fa-check text-6xl text-white"></i>
+                </div>
+            </div>
+            
+            <!-- Main Message -->
+            <h1 class="text-5xl font-bold text-gray-900 mb-4">Welcome to Premium! 🎉</h1>
+            <p class="text-xl text-gray-600 mb-12">Your subscription is now active and ready to use</p>
+            
+            <!-- Premium Badge -->
+            <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-8 py-3 rounded-full inline-flex items-center space-x-3 mb-12 shadow-lg">
+                <i class="fas fa-crown text-2xl"></i>
+                <span class="font-bold text-lg">Premium Member</span>
+            </div>
+            
+            <!-- Benefits Card -->
+            <div class="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">What's Next?</h3>
+                <p class="text-gray-600 mb-8">You now have access to all premium features and exclusive content!</p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-pink-50 to-purple-50">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-gem text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-2">Premium Pins</h4>
+                        <p class="text-sm text-gray-600">Browse exclusive content</p>
+                    </div>
+                    
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-ad text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-2">Ad-Free</h4>
+                        <p class="text-sm text-gray-600">No interruptions</p>
+                    </div>
+                    
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-headset text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-2">Priority Support</h4>
+                        <p class="text-sm text-gray-600">Get help faster</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="{% url 'core:home' %}" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    <i class="fas fa-sparkles mr-2"></i>
+                    Start Exploring
+                </a>
+                <a href="{% url 'users:profile' request.user.username %}" class="inline-flex items-center px-8 py-4 bg-white text-gray-700 font-semibold rounded-full shadow-lg hover:shadow-xl border-2 border-gray-200 transform hover:scale-105 transition-all duration-200">
+                    <i class="fas fa-user mr-2"></i>
+                    View Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

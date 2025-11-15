@@ -24,6 +24,7 @@ class Pin(models.Model):
     image = models.ImageField(upload_to='pins/')
     source_url = models.URLField(max_length=500, blank=True)
     tags = models.CharField(max_length=200, blank=True, help_text='Comma-separated tags')
+    is_premium_only = models.BooleanField(default=False, help_text='Only premium users can view this pin')
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='liked_pins',

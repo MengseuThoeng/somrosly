@@ -9,6 +9,11 @@ from .forms import PinCreateForm, PinUpdateForm
 def pin_list(request):
     """List all pins"""
     pins = Pin.objects.all()
+    
+    # Filter premium-only pins for non-premium users
+    if not request.user.is_authenticated or not request.user.is_premium:
+        pins = pins.filter(is_premium_only=False)
+    
     return render(request, 'pins/list.html', {'pins': pins})
 
 
@@ -33,11 +38,21 @@ def pin_detail(request, pk):
     """Pin detail view with related pins and comments"""
     pin = get_object_or_404(Pin, pk=pk)
     
+    # Check if user can view premium content
+    if pin.is_premium_only:
+        if not request.user.is_authenticated or not request.user.is_premium:
+            messages.warning(request, 'This is a premium-only pin. Upgrade to view!')
+            return redirect('payments:premium')
+    
     # Get comments (only top-level comments, replies are fetched separately)
     comments = pin.comments.filter(parent__isnull=True).select_related('user').prefetch_related('replies', 'likes')
     
     # Get related pins based on tags or same board
     related_pins = Pin.objects.exclude(pk=pk)
+    
+    # Filter premium-only pins for non-premium users
+    if not request.user.is_authenticated or not request.user.is_premium:
+        related_pins = related_pins.filter(is_premium_only=False)
     
     # Try to find pins with similar tags
     if pin.tags:

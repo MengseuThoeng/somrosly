@@ -17,7 +17,7 @@ class PinCreateForm(forms.ModelForm):
     
     class Meta:
         model = Pin
-        fields = ['title', 'description', 'image', 'board', 'source_url', 'tags']
+        fields = ['title', 'description', 'image', 'board', 'source_url', 'tags', 'is_premium_only']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent',
@@ -39,6 +39,9 @@ class PinCreateForm(forms.ModelForm):
             'tags': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent',
                 'placeholder': 'art, design, inspiration (comma-separated)'
+            }),
+            'is_premium_only': forms.CheckboxInput(attrs={
+                'class': 'w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500'
             }),
         }
     
