@@ -1,0 +1,159 @@
+# 💳 Stripe Test Payment Details
+
+## Test Credit Cards for Stripe
+
+### ✅ Successful Payment Cards
+
+**Visa (Default)**
+Card Number: 4242 4242 4242 4242
+Expiry Date: Any future date (e.g., 12/26)
+CVV: Any 3 digits (e.g., 123)
+ZIP Code: Any 5 digits (e.g., 12345)
+
+**Visa (Debit)**
+Card Number: 4000 0566 5566 5556
+Expiry Date: Any future date
+CVV: Any 3 digits
+ZIP Code: Any 5 digits
+
+**Mastercard**
+Card Number: 5555 5555 5555 4444
+Expiry Date: Any future date
+CVV: Any 3 digits
+ZIP Code: Any 5 digits
+
+**American Express**
+Card Number: 3782 822463 10005
+Expiry Date: Any future date
+CVV: Any 4 digits (e.g., 1234)
+ZIP Code: Any 5 digits
+
+**Discover**
+Card Number: 6011 1111 1111 1117
+Expiry Date: Any future date
+CVV: Any 3 digits
+ZIP Code: Any 5 digits
+
+**Diners Club**
+Card Number: 3056 9309 0259 04
+Expiry Date: Any future date
+CVV: Any 3 digits
+ZIP Code: Any 5 digits
+
+**JCB**
+Card Number: 3566 0020 2036 0505
+Expiry Date: Any future date
+CVV: Any 3 digits
+ZIP Code: Any 5 digits
+
+### ❌ Cards for Testing Failures
+
+**Generic Card Decline**
+Card Number: 4000 0000 0000 0002
+Result: Card will be declined
+
+**Insufficient Funds**
+Card Number: 4000 0000 0000 9995
+Result: Insufficient funds error
+
+**Lost Card**
+Card Number: 4000 0000 0000 9987
+Result: Lost card error
+
+**Stolen Card**
+Card Number: 4000 0000 0000 9979
+Result: Stolen card error
+
+**Expired Card**
+Card Number: 4000 0000 0000 0069
+Result: Expired card error
+
+**Incorrect CVC**
+Card Number: 4000 0000 0000 0127
+Result: Incorrect CVC error
+
+**Processing Error**
+Card Number: 4000 0000 0000 0119
+Result: Processing error
+
+### 🔐 3D Secure Authentication Cards
+
+**3D Secure Required (Authentication Succeeds)**
+Card Number: 4000 0027 6000 3184
+Result: Will require 3D Secure, then succeed
+
+**3D Secure Required (Authentication Fails)**
+Card Number: 4000 0082 6000 3178
+Result: Will require 3D Secure, then fail
+
+---
+
+## 🧪 How to Test Stripe Payment
+
+1. Go to: http://127.0.0.1:8000/payments/premium/
+
+2. Click **"Pay with Stripe"** button
+
+3. You'll be redirected to Stripe Checkout
+
+4. Enter test card details:
+   - Card Number: 4242 4242 4242 4242
+   - Expiry: 12/26
+   - CVC: 123
+   - Name: Any name (e.g., Test User)
+   - Email: Your email
+   - ZIP: 12345
+
+5. Click "Pay"
+
+6. You'll be redirected back to success page
+
+7. Your account will be upgraded to Premium!
+
+---
+
+## 📋 Your Stripe Configuration
+
+Mode: Test Mode ✓
+Public Key: pk_test_51SOCJTPzB1MV8i7V...
+Secret Key: sk_test_51SOCJTPzB1MV8i7V...
+Price ID: price_1STdWAPzB1MV8i7Vtv5kXNyf
+Amount: $2.00/month
+
+---
+
+## 🔑 Quick Copy-Paste for Testing
+
+Card: 4242 4242 4242 4242
+Expiry: 12/26
+CVC: 123
+ZIP: 12345
+Name: Test User
+
+---
+
+## 💡 Tips
+
+✅ Use any future expiry date
+✅ Use any 3-digit CVC (4 digits for Amex)
+✅ Use any ZIP code
+✅ Use any cardholder name
+✅ All test cards work in TEST MODE only
+❌ Don't use real card numbers in test mode
+❌ Test cards won't work in live mode
+
+---
+
+## 🌐 More Test Cards
+
+For more test cards and scenarios, visit:
+https://stripe.com/docs/testing
+
+---
+
+## ✅ Recommended for Quick Testing
+
+**Just use this one:**
+4242 4242 4242 4242 | 12/26 | 123
+
+This is the easiest and most reliable test card!
