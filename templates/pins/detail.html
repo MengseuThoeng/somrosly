@@ -134,7 +134,15 @@
                 </div>
                 
                 <!-- Title -->
-                <h1 class="text-4xl font-bold text-gray-900 mb-4 leading-tight">{{ pin.title }}</h1>
+                <div class="flex items-start justify-between gap-4 mb-4">
+                    <h1 class="text-4xl font-bold text-gray-900 leading-tight flex-1">{{ pin.title }}</h1>
+                    {% if pin.is_premium_only %}
+                    <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 flex-shrink-0">
+                        <i class="fas fa-crown"></i>
+                        <span>Premium Only</span>
+                    </div>
+                    {% endif %}
+                </div>
                 
                 <!-- Description -->
                 {% if pin.description %}

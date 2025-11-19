@@ -170,6 +170,8 @@ if USE_S3:
     AWS_S3_VERIFY = config('AWS_S3_VERIFY', default=False, cast=bool)
     AWS_S3_ADDRESSING_STYLE = "path"  # Use path-style addressing for MinIO
     AWS_QUERYSTRING_AUTH = False  # Don't add authentication query parameters
+    AWS_S3_FILE_OVERWRITE = False  # Don't overwrite files with same name
+    AWS_DEFAULT_ACL = 'public-read'  # Make uploaded files publicly readable
     
     # S3 URL settings - Force HTTP for MinIO
     AWS_S3_URL_PROTOCOL = 'http:'
@@ -178,14 +180,31 @@ if USE_S3:
         'CacheControl': 'max-age=86400',
     }
     
-    # Default file storage
+    # Storage configuration - Both old and new style for compatibility
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
     
     # Media files configuration
     MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
     MEDIA_ROOT = ''
 else:
     # Local media files
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 

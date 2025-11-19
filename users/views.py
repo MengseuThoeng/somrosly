@@ -115,13 +115,14 @@ def verify_otp(request, email):
             user_data = otp_instance.user_data
             
             try:
+                # Create user with hashed password
                 user = User.objects.create_user(
                     username=user_data['username'],
                     email=user_data['email'],
-                    password=user_data['password'],
-                    first_name=user_data.get('first_name', ''),
-                    last_name=user_data.get('last_name', ''),
+                    password=user_data['password']
                 )
+                user.first_name = user_data.get('first_name', '')
+                user.last_name = user_data.get('last_name', '')
                 user.is_email_verified = True
                 user.is_active = True
                 user.save()
@@ -130,11 +131,23 @@ def verify_otp(request, email):
                 otp_instance.is_verified = True
                 otp_instance.save()
                 
-                # Auto login the user
-                login(request, user)
-                messages.success(request, f'Welcome to Somrosly, {user.username}! Your account has been created successfully.')
-                return redirect('core:home')
+                # Auto login the user - need to authenticate with backend
+                from django.contrib.auth import authenticate
+                authenticated_user = authenticate(
+                    request,
+                    username=user_data['username'],
+                    password=user_data['password']
+                )
+                if authenticated_user:
+                    login(request, authenticated_user)
+                    messages.success(request, f'Welcome to Somrosly, {user.username}! Your account has been created successfully.')
+                    return redirect('core:home')
+                else:
+                    # If auth fails, still redirect to login
+                    messages.success(request, 'Account created! Please login.')
+                    return redirect('users:login')
             except Exception as e:
+                print(f"Error creating user: {e}")  # Debug
                 messages.error(request, f'Error creating account: {str(e)}')
                 return render(request, 'users/verify_otp.html', {'email': email})
         else:

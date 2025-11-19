@@ -253,8 +253,8 @@ def add_comment(request, pk):
             recipient=pin.user,
             sender=request.user,
             notification_type='comment',
-            pin=pin,
-            text=f'{request.user.username} commented on your pin: "{text[:50]}..."'
+            message=f'{request.user.username} commented on your pin: "{text[:50]}..."',
+            link=f'/pins/{pin.id}/'
         )
     
     # If replying to a comment, notify the parent comment author
@@ -266,8 +266,8 @@ def add_comment(request, pk):
                 recipient=parent_comment.user,
                 sender=request.user,
                 notification_type='comment',
-                pin=pin,
-                text=f'{request.user.username} replied to your comment: "{text[:50]}..."'
+                message=f'{request.user.username} replied to your comment: "{text[:50]}..."',
+                link=f'/pins/{pin.id}/'
             )
     
     # Return comment data

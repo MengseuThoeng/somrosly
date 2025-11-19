@@ -1,6 +1,13 @@
 {% for pin in pins %}
 <div class="masonry-item relative group cursor-pointer">
     <a href="{% url 'pins:detail' pin.pk %}">
+        {% if pin.is_premium_only %}
+        <!-- Premium Badge -->
+        <div class="absolute top-2 right-2 z-10 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+            <i class="fas fa-crown"></i>
+            <span>Premium</span>
+        </div>
+        {% endif %}
         <img 
             src="{{ pin.image.url }}" 
             alt="{{ pin.title }}"
@@ -30,6 +37,9 @@
                     </div>
                     {% endif %}
                     <span class="text-sm font-medium">{{ pin.user.username }}</span>
+                    {% if pin.is_premium_only %}
+                    <i class="fas fa-crown text-yellow-400 text-xs" title="Premium Only"></i>
+                    {% endif %}
                 </div>
             </div>
         </div>

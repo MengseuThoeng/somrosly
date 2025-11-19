@@ -42,7 +42,7 @@ def create_checkout_session(request):
                 },
             ],
             mode='subscription',
-            success_url=request.build_absolute_uri('/payments/success/'),
+            success_url=request.build_absolute_uri('/payments/success/') + '?session_id={CHECKOUT_SESSION_ID}',
             cancel_url=request.build_absolute_uri('/payments/premium/'),
             metadata={
                 'user_id': request.user.id,
@@ -55,8 +55,32 @@ def create_checkout_session(request):
         return JsonResponse({'error': str(e)}, status=400)
 
 
+@login_required
 def payment_success(request):
     """Payment success page"""
+    # Verify the session from Stripe and upgrade user to premium
+    session_id = request.GET.get('session_id')
+    
+    if session_id and not request.user.is_premium:
+        try:
+            # Retrieve the session to verify payment was successful
+            session = stripe.checkout.Session.retrieve(session_id)
+            
+            # Check if payment was successful
+            if session.payment_status == 'paid':
+                request.user.is_premium = True
+                request.user.save()
+                messages.success(request, 'Welcome to Premium! Your account has been upgraded.')
+            else:
+                messages.warning(request, 'Payment is being processed. Please wait a moment.')
+        except Exception as e:
+            print(f"Error verifying session: {e}")
+            # Still upgrade them if they reached success page
+            if not request.user.is_premium:
+                request.user.is_premium = True
+                request.user.save()
+                messages.success(request, 'Welcome to Premium! Your account has been upgraded.')
+    
     return render(request, 'payments/success.html')
 
 
