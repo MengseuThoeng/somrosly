@@ -233,6 +233,7 @@ STRIPE_PRICE_ID = config('STRIPE_PRICE_ID', default='')
 PAYPAL_MODE = config('PAYPAL_MODE', default='sandbox')  # 'sandbox' or 'live'
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID', default='')
 PAYPAL_CLIENT_SECRET = config('PAYPAL_CLIENT_SECRET', default='')
+PAYPAL_PLAN_ID = config('PAYPAL_PLAN_ID', default='')  # Recurring subscription plan ID
 
 # File Upload Settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB

@@ -7,16 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import stripe
 import json
-import paypalrestsdk
+import requests
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
-# Configure PayPal
-paypalrestsdk.configure({
-    "mode": getattr(settings, 'PAYPAL_MODE', 'sandbox'),  # sandbox or live
-    "client_id": getattr(settings, 'PAYPAL_CLIENT_ID', ''),
-    "client_secret": getattr(settings, 'PAYPAL_CLIENT_SECRET', '')
-})
 
 
 @login_required
@@ -141,50 +134,66 @@ def stripe_webhook(request):
 @login_required
 @require_POST
 def create_paypal_payment(request):
-    """Create a PayPal payment for premium subscription"""
+    """Create a PayPal subscription for premium membership"""
     try:
         # Check if user is already premium
         if request.user.is_premium:
             return JsonResponse({'error': 'You are already a premium member'}, status=400)
         
-        # Create PayPal payment
-        payment = paypalrestsdk.Payment({
-            "intent": "sale",
-            "payer": {
-                "payment_method": "paypal"
-            },
-            "redirect_urls": {
+        # Get access token
+        token_url = f"https://api{'.' if settings.PAYPAL_MODE == 'live' else '.sandbox.'}paypal.com/v1/oauth2/token"
+        token_response = requests.post(
+            token_url,
+            headers={'Accept': 'application/json', 'Accept-Language': 'en_US'},
+            data={'grant_type': 'client_credentials'},
+            auth=(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
+        )
+        
+        if token_response.status_code != 200:
+            return JsonResponse({'error': 'Failed to get PayPal access token'}, status=400)
+        
+        access_token = token_response.json()['access_token']
+        
+        # Create subscription
+        subscription_url = f"https://api{'.' if settings.PAYPAL_MODE == 'live' else '.sandbox.'}paypal.com/v1/billing/subscriptions"
+        subscription_data = {
+            "plan_id": settings.PAYPAL_PLAN_ID,
+            "application_context": {
+                "brand_name": "Somrosly",
+                "locale": "en-US",
+                "shipping_preference": "NO_SHIPPING",
+                "user_action": "SUBSCRIBE_NOW",
                 "return_url": request.build_absolute_uri('/payments/paypal/execute/'),
                 "cancel_url": request.build_absolute_uri('/payments/premium/')
             },
-            "transactions": [{
-                "item_list": {
-                    "items": [{
-                        "name": "Somrosly Premium Subscription",
-                        "sku": "premium-monthly",
-                        "price": "2.00",
-                        "currency": "USD",
-                        "quantity": 1
-                    }]
-                },
-                "amount": {
-                    "total": "2.00",
-                    "currency": "USD"
-                },
-                "description": "Somrosly Premium Monthly Subscription - $2/month"
-            }]
-        })
+            "custom_id": str(request.user.id)  # Store user ID for later
+        }
         
-        if payment.create():
-            # Store user_id in session for later
-            request.session['pending_premium_user_id'] = request.user.id
-            
+        subscription_response = requests.post(
+            subscription_url,
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {access_token}'
+            },
+            json=subscription_data
+        )
+        
+        if subscription_response.status_code == 201:
+            subscription = subscription_response.json()
             # Get approval URL
-            for link in payment.links:
-                if link.rel == "approval_url":
-                    return JsonResponse({'approval_url': str(link.href)})
+            approval_url = next(
+                (link['href'] for link in subscription.get('links', []) if link['rel'] == 'approve'),
+                None
+            )
+            if approval_url:
+                # Store subscription ID in session
+                request.session['pending_paypal_subscription_id'] = subscription['id']
+                return JsonResponse({'approval_url': approval_url})
+            else:
+                return JsonResponse({'error': 'No approval URL found'}, status=400)
         else:
-            return JsonResponse({'error': payment.error}, status=400)
+            error_msg = subscription_response.json().get('message', 'Unknown error')
+            return JsonResponse({'error': f'PayPal error: {error_msg}'}, status=400)
     
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
@@ -192,32 +201,58 @@ def create_paypal_payment(request):
 
 @login_required
 def execute_paypal_payment(request):
-    """Execute PayPal payment after user approval"""
-    payment_id = request.GET.get('paymentId')
-    payer_id = request.GET.get('PayerID')
+    """Execute PayPal subscription after user approval"""
+    subscription_id = request.session.get('pending_paypal_subscription_id')
     
-    if not payment_id or not payer_id:
-        messages.error(request, 'Invalid payment parameters')
+    if not subscription_id:
+        messages.error(request, 'Invalid subscription session')
         return redirect('payments:premium')
     
     try:
-        payment = paypalrestsdk.Payment.find(payment_id)
+        # Get access token
+        token_url = f"https://api{'.' if settings.PAYPAL_MODE == 'live' else '.sandbox.'}paypal.com/v1/oauth2/token"
+        token_response = requests.post(
+            token_url,
+            headers={'Accept': 'application/json', 'Accept-Language': 'en_US'},
+            data={'grant_type': 'client_credentials'},
+            auth=(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
+        )
         
-        if payment.execute({"payer_id": payer_id}):
-            # Payment successful - upgrade user to premium
-            user_id = request.session.get('pending_premium_user_id')
+        if token_response.status_code != 200:
+            messages.error(request, 'Failed to verify PayPal subscription')
+            return redirect('payments:premium')
+        
+        access_token = token_response.json()['access_token']
+        
+        # Get subscription details
+        subscription_url = f"https://api{'.' if settings.PAYPAL_MODE == 'live' else '.sandbox.'}paypal.com/v1/billing/subscriptions/{subscription_id}"
+        subscription_response = requests.get(
+            subscription_url,
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {access_token}'
+            }
+        )
+        
+        if subscription_response.status_code == 200:
+            subscription = subscription_response.json()
             
-            if user_id and user_id == request.user.id:
+            # Check if subscription is active
+            if subscription['status'] == 'ACTIVE':
+                # Upgrade user to premium
                 request.user.is_premium = True
                 request.user.save()
-                request.session.pop('pending_premium_user_id', None)
+                
+                # Clear session
+                request.session.pop('pending_paypal_subscription_id', None)
+                
                 messages.success(request, 'Payment successful! You are now a premium member.')
                 return redirect('payments:payment_success')
             else:
-                messages.error(request, 'User verification failed')
+                messages.error(request, f'Subscription status: {subscription["status"]}. Please try again.')
                 return redirect('payments:premium')
         else:
-            messages.error(request, f'Payment execution failed: {payment.error}')
+            messages.error(request, 'Failed to verify subscription')
             return redirect('payments:premium')
     
     except Exception as e:
